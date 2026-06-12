@@ -1,45 +1,48 @@
 import mongoose from "mongoose";
 import * as bcrypt from "bcrypt";
 
-interface IUser {
+interface IUser extends Document {
   username: string;
   email: string;
   password: string;
+  role: "admin" | "user";
   avatar?: string | null;
   status: "online" | "offline" | "away";
   lastSeen?: Date;
-  createdAt?: Date;
 }
 
-const userSchema = new mongoose.Schema<IUser>({
-  username: {
-    type: String,
-    required: [true, "Username required"],
-    unique: true,
-    trim: true,
-    minlength: 3,
-    maxlength: 30,
+const userSchema = new mongoose.Schema<IUser>(
+  {
+    username: {
+      type: String,
+      required: [true, "Username required"],
+      unique: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 30,
+    },
+    email: {
+      type: String,
+      required: [true, "Email required"],
+      unique: true,
+      lowerCase: true,
+      index: true,
+    },
+    password: { type: String, required: true, select: false },
+    role: { type: String, enum: ["admin", "user"], default: "user" },
+    avatar: { type: String, default: null },
+    status: {
+      type: String,
+      enum: ["online", "offline", "away"],
+      default: "offline",
+    },
+    lastSeen: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  email: {
-    type: String,
-    required: [true, "Email required"],
-    unique: true,
-    toLowerCase: true,
-    index: true,
-  },
-  password: { type: String, required: true, select: false },
-  avatar: { type: String, default: null },
-  status: {
-    type: String,
-    enum: ["online", "offline", "away"],
-    default: "offline",
-  },
-  lastSeen: {
-    type: Date,
-    default: Date.now,
-  },
-  createdAt: { type: Date, default: Date.now },
-});
+  { timestamps: true },
+);
 
 // Hash the password before save it
 userSchema.pre("save", async function (this: mongoose.HydratedDocument<IUser>) {
@@ -61,4 +64,4 @@ userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
   return obj;
 };
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model<IUser>("User", userSchema);
