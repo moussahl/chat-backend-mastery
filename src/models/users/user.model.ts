@@ -9,6 +9,9 @@ interface IUser extends Document {
   avatar?: string | null;
   status: "online" | "offline" | "away";
   lastSeen?: Date;
+
+   comparePassword(password: string): Promise<boolean>;
+   toJSON(): Record<string, unknown>;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -51,11 +54,11 @@ userSchema.pre("save", async function (this: mongoose.HydratedDocument<IUser>) {
 });
 
 // method for compare the password
-userSchema.methods.comparePassword = function (
+userSchema.methods.comparePassword = async function (
   this: mongoose.HydratedDocument<IUser>,
   plain: string,
 ): Promise<boolean> {
-  return bcrypt.compare(plain, this.password);
+  return await bcrypt.compare(plain, this.password);
 };
 
 // never return password hash in JSON
