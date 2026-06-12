@@ -1,9 +1,20 @@
 import mongoose from "mongoose";
+import * as bcrypt from "bcrypt";
 
-const userSchema = new mongoose.Schema({
+interface IUser {
+  username: string;
+  email: string;
+  password: string;
+  avatar?: string | null;
+  status: "online" | "offline" | "away";
+  lastSeen?: Date;
+  createdAt?: Date;
+}
+
+const userSchema = new mongoose.Schema<IUser>({
   username: {
     type: String,
-    required: [true, "Username requis"],
+    required: [true, "Username required"],
     unique: true,
     trim: true,
     minlength: 3,
@@ -11,8 +22,9 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, "Email requis"],
+    required: [true, "Email required"],
     unique: true,
+    toLowerCase: true,
     index: true,
   },
   password: { type: String, required: true, select: false },
@@ -29,40 +41,24 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-
-
-
-
-
-
-
-
-
-
-
-/* 
-
-// Hash le mot de passe avant save
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('passwordHash')) return next();
-  this.passwordHash = await bcrypt.hash(this.passwordHash, 12);
-  next();
+// Hash the password before save it
+userSchema.pre("save", async function (this: mongoose.HydratedDocument<IUser>) {
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 12);
 });
 
-// Méthode pour comparer le mot de passe
-userSchema.methods.comparePassword = function (plain) {
-  return bcrypt.compare(plain, this.passwordHash);
+// method for compare the password
+userSchema.methods.comparePassword = function (
+  this: mongoose.HydratedDocument<IUser>,
+  plain: string,
+): Promise<boolean> {
+  return bcrypt.compare(plain, this.password);
 };
 
-// Ne jamais retourner passwordHash en JSON
-userSchema.methods.toJSON = function () {
-  const obj = this.toObject();
-  delete obj.passwordHash;
+// never return password hash in JSON
+userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
+  const { password, ...obj } = this.toObject();
   return obj;
-}; */
+};
 
-
-
-
-
-export default  mongoose.model("User", userSchema);
+export default mongoose.model("User", userSchema);
