@@ -5,6 +5,8 @@ require("dotenv").config();
 
 import { connectToDB } from "./config/db.config";
 
+import authRoutes from './models/auth/auth.routes' 
+
 import errorHandler from "./middlewares/error.middleware";
 
 const PORT = process.env.PORT || 5000;
@@ -12,6 +14,20 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use(errorHandler)
+
+
+
+// routes
+
+app.use('/api/v1/auth', authRoutes)
+
+
+
+
+
+
+
+
 
 const startServer = async () => {
   try {
