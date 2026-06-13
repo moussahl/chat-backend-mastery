@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from "express";
-const app = express();
 
 require("dotenv").config();
 
@@ -9,11 +8,44 @@ import authRoutes from "./models/auth/auth.routes";
 
 import errorHandler from "./middlewares/error.middleware";
 
+import helemt from "helmet";
+import cors from "cors";
+
 const PORT = process.env.PORT || 5000;
 
+// create Express application
+const app = express();
+
+// ============================================
+// Security Middleware
+// ============================================
+
+// Helemet: secure the HTTP headers
+app.use(helemt());
+
+// CORS: authorize cross-origin requests
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL, // modify later
+    credentials:
+      process.env.CREDENTIALS === "true" ||
+      process.env.CREDENTIALS === "1" ||
+      false, // modify later
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+
+
+
+
+
+
+
+
+
+
 app.use(express.json());
-
-
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`${req.method} from ${req.url} at ${new Date().toISOString}`);
@@ -23,13 +55,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // routes
 
 app.use("/api/v1/auth", authRoutes);
-
-
-
-
-
-
-
 
 // Error handler - MUST be last
 app.use(errorHandler);
