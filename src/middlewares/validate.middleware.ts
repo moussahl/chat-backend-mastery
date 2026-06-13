@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import AppError from "../utils/AppError.js";
+import AppError from "../utils/AppError";
 import { Request, Response, NextFunction } from "express";
 
 //  runs the validators and short-circuits with 400 if invalid.
