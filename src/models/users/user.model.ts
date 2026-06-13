@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import * as bcrypt from "bcrypt";
+import { Document } from "mongoose";
 
 interface IUser extends Document {
   username: string;
@@ -28,7 +29,7 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       required: [true, "Email required"],
       unique: true,
-      lowerCase: true,
+      lowercase: true,
       index: true,
     },
     password: { type: String, required: true, select: false },
