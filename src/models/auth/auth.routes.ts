@@ -1,6 +1,6 @@
 import {Router} from 'express'
 import * as authController from './auth.controller'
-import { registerValidator, loginValidator } from './auth.validator.js';
+import { registerValidator, loginValidator } from './auth.validator';
 import validate from '../../middlewares/validate.middleware'
 
 const router = Router()
