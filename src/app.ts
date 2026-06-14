@@ -1,18 +1,22 @@
-import express, { Request, Response, NextFunction } from "express";
-
+// 1. Environment Configuration (Must be at the very top to load variables early)
 require("dotenv").config();
 
-import { connectToDB } from "./config/db.config";
-
-import authRoutes from "./models/auth/auth.routes";
-
-import errorHandler from "./middlewares/error.middleware";
-
-import helemt from "helmet";
+// 2. Third-Party / Core Dependencies
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-
+import helemt from "helmet"; // Note: You might want to fix the typo here to "helmet"
 import morgan from "morgan";
 
+// 3. Database & Infrastructure Configuration
+import { connectToDB } from "./config/db.config";
+
+// 4. Custom Application Middlewares
+import errorHandler from "./middlewares/error.middleware";
+
+// 5. Application Routes
+import authRoutes from "./models/auth/auth.routes";
+
+// 6. Constants & Configurations
 const PORT = process.env.PORT || 5000;
 
 // create Express application
