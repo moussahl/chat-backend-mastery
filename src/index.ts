@@ -12,6 +12,7 @@ import helemt from "helmet";
 import cors from "cors";
 
 import morgan from "morgan";
+import { timeStamp } from "node:console";
 
 const PORT = process.env.PORT || 5000;
 
@@ -58,7 +59,26 @@ app.use(express.json({ limit: "10kb" }));
 //URL-encoded Parser
 app.use(express.urlencoded({ limit: "10kb", extended: true }));
 
+// ============================================
+// HEALTH ROUTES (for monitoring)
+// ============================================
 
+app.get("/health", (req: Request, res: Response) => {
+  res.status(200).json({
+    status: "Ok",
+    timeStamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV,
+  });
+});
+
+app.get("api/v1/health", (req: Request, res: Response) => {
+  res.status(200).json({
+    status: "OK",
+    version: "1.0.0",
+    timestamp: new Date().toISOString(),
+  });
+});
 
 
 
