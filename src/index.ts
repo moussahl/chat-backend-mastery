@@ -91,7 +91,7 @@ app.use("/api/v1/auth", authRoutes);
 //  404 MIDDLEWARE - Not found Routes
 // ============================================
 
-app.all("/{*splat}", (req, res) => {
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: `Can't find ${req.originalUrl} on this server!`,
