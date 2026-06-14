@@ -48,7 +48,15 @@ const morganFormat =
 
 app.use(morgan(morganFormat));
 
+// ============================================
+// MIDDLEWARES DE PARSING
+// ============================================
 
+// JSON Parser
+app.use(express.json({ limit: "10kb" }));
+
+//URL-encoded Parser
+app.use(express.urlencoded({ limit: "10kb", extended: true }));
 
 
 
