@@ -81,23 +81,27 @@ app.get("api/v1/health", (req: Request, res: Response) => {
 });
 
 
+// ============================================
+// APPLICATION ROUTES
+// ============================================
 
-
-
-
-
-
-
-
-
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(`${req.method} from ${req.url} at ${new Date().toISOString}`);
-  next();
-});
-
-// routes
-
+//auth route
 app.use("/api/v1/auth", authRoutes);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Error handler - MUST be last
 app.use(errorHandler);
