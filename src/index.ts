@@ -11,6 +11,8 @@ import errorHandler from "./middlewares/error.middleware";
 import helemt from "helmet";
 import cors from "cors";
 
+import morgan from "morgan";
+
 const PORT = process.env.PORT || 5000;
 
 // create Express application
@@ -36,6 +38,15 @@ app.use(
   }),
 );
 
+// ============================================
+//  LOGGING MIDDLEWARES
+// ============================================
+
+// Morgan : request HTTP logger
+const morganFormat =
+  process.env.MORGANFORMAT === "production" ? "combined" : "dev";
+
+app.use(morgan(morganFormat));
 
 
 
@@ -45,7 +56,11 @@ app.use(
 
 
 
-app.use(express.json());
+
+
+
+
+
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`${req.method} from ${req.url} at ${new Date().toISOString}`);
