@@ -20,7 +20,7 @@ export const register = async ({
   }
 
   const user = await User.create({ username, email, password });
-  const token = signToken(user._id.toString(), "user");
+  const token = signToken(user._id.toString(), "user", username);
 
   return { token, user };
 };
@@ -43,7 +43,7 @@ export const login = async ({
 
   if (!isMatch) throw new AppError("Invalid Credentials", 401);
 
-  const token = signToken(user._id.toString(), user.role);
+  const token = signToken(user._id.toString(), user.role, user.username);
 
   return { token, user };
 };
