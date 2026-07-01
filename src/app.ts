@@ -4,7 +4,7 @@ require("dotenv").config();
 // 2. Third-Party / Core Dependencies
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import helemt from "helmet"; // Note: You might want to fix the typo here to "helmet"
+import helemt from "helmet";
 import morgan from "morgan";
 
 // 3. Database & Infrastructure Configuration
@@ -120,3 +120,5 @@ const startServer = async () => {
 };
 
 startServer();
+
+export default app;
