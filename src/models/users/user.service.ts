@@ -105,7 +105,15 @@ export const getUserPublicInfo = async (userId: string) => {
 
 // add updateAvatar later
 
+// get all users
 
+const getAllUsers = async ()=> {
+  const users = User.find();
+  if(!users)
+    throw new AppError("Users not found",400)
+
+  return users;
+}
 
 export default {
   getMe,
