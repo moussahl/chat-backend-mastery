@@ -116,6 +116,7 @@ const getAllUsers = async ()=> {
 }
 
 export default {
+  getAllUsers,
   getMe,
   updateProfile,
   updateStatus,
