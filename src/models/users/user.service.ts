@@ -14,7 +14,6 @@ export const getMe = async (userId: string) => {
 };
 
 // update Profile
-
 export const updateProfile = async (
   userId: string,
   updateData: {
