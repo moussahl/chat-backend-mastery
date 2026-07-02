@@ -197,3 +197,32 @@ export const deleteRoom = async (roomId: string, userId: string) => {
 };
 
 
+// Get room members
+
+export const getRoomMembers = async (roomId: string, page = 1, limit = 50) => {
+  const skip = (page - 1) * limit;
+
+  const members = await RoomMember.find({
+    roomId: new Types.ObjectId(roomId),
+  })
+    .populate("userId", "username status")
+    .skip(skip)
+    .limit(limit)
+    .sort({ role: -1, joinedAt: 1 });
+
+  const total = await RoomMember.countDocuments({
+    roomId: new Types.ObjectId(roomId),
+  });
+
+  console.log(`✅ Room members fetched: ${roomId}`);
+  return {
+    data: members,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  };
+};
+
