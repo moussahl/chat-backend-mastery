@@ -1,4 +1,4 @@
-import { verifyToken } from "../utils/token";
+import { verifyToken, TokenPayload } from "../utils/token";
 import User from "../models/users/user.model";
 import AppError from "../utils/AppError";
 import catchAsync from "../utils/catchAsync";
@@ -8,7 +8,7 @@ import { Request, Response, NextFunction } from "express";
 declare global {
   namespace Express {
     interface Request {
-      user?: any;
+      user?: TokenPayload;
     }
   }
 }
@@ -24,7 +24,11 @@ const protect = catchAsync(
     const user = await User.findById(decoded.id);
     if (!user) throw new AppError("User no longer exists", 401);
 
-    req.user = user;
+    req.user = {
+      id: decoded.id,
+      username: decoded.username,
+      role: decoded.role,
+    };
 
     next();
   },
