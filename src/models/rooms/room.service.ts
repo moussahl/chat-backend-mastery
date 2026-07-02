@@ -46,6 +46,39 @@ export const listUserRooms = async (userId: string, page = 1, limit = 20) => {
     })
     .skip(skip)
     .limit(limit);
+
+  const rooms = roomMembership.map((rm) => {
+    // rm.roomId can be either a populated Room document or an ObjectId.
+    // Safely call toObject if available, otherwise fall back to an object with _id.
+    const roomData =
+      rm.roomId && typeof (rm.roomId as any).toObject === "function"
+        ? (rm.roomId as any).toObject()
+        : { _id: rm.roomId };
+
+    return {
+      ...roomData,
+      userRole: rm.role,
+      joinedAt: rm.joinedAt,
+    };
+  });
+
+  //count the total
+
+  const total = await RoomMember.countDocuments({
+    userId: new Types.ObjectId(userId),
+  });
+
+  console.log(`✅ Rooms listed for user: ${userId}`);
+
+  return {
+    data: rooms,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  };
 };
 
 
