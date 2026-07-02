@@ -7,6 +7,7 @@ const router = Router();
 router.get("/me", authMiddleware, userController.getMe);
 router.patch("/profile", authMiddleware, userController.updateProfile);
 router.patch("/status", authMiddleware, userController.updateStatus);
-router.get("/:userId", userController.getUserPublicInfo);
+router.get("/:userId", authMiddleware,userController.getUserPublicInfo);
+router.get("/users",authMiddleware, userController.getAllusers)
 
 export default router;
