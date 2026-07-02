@@ -87,7 +87,6 @@ export const getUserPublicInfo = catchAsync(
       ? req.params.userId[0]
       : req.params.userId;
 
-      
     if (!userId) {
       throw new AppError("Invalid user ID", 400);
     }
@@ -101,4 +100,13 @@ export const getUserPublicInfo = catchAsync(
   },
 );
 
+// get all users
 
+export const getAllusers = catchAsync(async (req: Request, res: Response) => {
+  const users = await userService.getAllUsers();
+
+  res.status(200).json({
+    success: true,
+    data: users,
+  });
+});
