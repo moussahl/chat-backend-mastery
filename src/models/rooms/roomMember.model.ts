@@ -13,7 +13,7 @@ const roomMemberSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    enum: ["member, admin"],
+    enum: ["member", "admin"],
     default: "member",
     required: true,
   },
@@ -25,4 +25,4 @@ const roomMemberSchema = new mongoose.Schema({
 roomMemberSchema.index({ userId: 1, roomId: 1 }, { unique: true });
 
 
-export default  mongoose.model("RoomMember", roomMemberSchema);
+export const RoomMember =  mongoose.model("RoomMember", roomMemberSchema);
