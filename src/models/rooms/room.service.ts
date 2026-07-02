@@ -32,7 +32,7 @@ export const createRoom = async (
   return room;
 };
 
-// list room members
+// list all rooms where user is member
 
 export const listUserRooms = async (userId: string, page = 1, limit = 20) => {
   const skip = (page - 1) * limit;
@@ -81,7 +81,7 @@ export const listUserRooms = async (userId: string, page = 1, limit = 20) => {
   };
 };
 
-// get room by ID
+// Get room by ID
 
 export const getRoomById = async (roomId: string) => {
   const room = await Room.findById(roomId).populate("createdBy", "name").lean();
@@ -101,4 +101,64 @@ export const getRoomById = async (roomId: string) => {
   };
 };
 
+// Join room
 
+export const joinRoom = async (userId: string, roomId: string) => {
+  const room = await Room.findById(roomId);
+  if (!roomId) throw new AppError("Room not found", 404);
+
+  // verifiy if the user is already member
+  const existingMembership = await RoomMember.findOne({
+    userId: new Types.ObjectId(userId),
+    roomId: new Types.ObjectId(roomId),
+  });
+
+  if (existingMembership) {
+    throw new AppError("User is already a member of this room", 400);
+  }
+
+  // create membership
+
+  const roomMember = await RoomMember.create({
+    userId: new Types.ObjectId(userId),
+    roomId: new Types.ObjectId(roomId),
+    role: "member",
+  });
+
+  await roomMember.populate("userId", "username  status");
+
+  console.log(`✅ User ${userId} joined room ${roomId}`);
+
+  return roomMember;
+};
+
+// Quit room
+
+export const leaveRoom = async (userId: string, roomId: string) => {
+  const membership = await RoomMember.findOneAndDelete({
+    userId: new Types.ObjectId(userId),
+    roomId: new Types.ObjectId(roomId),
+  });
+
+  if (!membership) {
+    throw new AppError("User is not a member of this room", 404);
+  }
+
+  // If it was the admin and there is no longer an admin, delete the room
+  const adminCount = await RoomMember.countDocuments({
+    roomId: new Types.ObjectId(roomId),
+    role: "admin",
+  });
+
+  if (adminCount === 0) {
+    await Room.findByIdAndDelete(roomId);
+    console.log(`✅ Room deleted (no admins left): ${roomId}`);
+  }
+
+  console.log(`✅ User ${userId} left room ${roomId}`);
+
+  return {
+    success: true,
+    message: "Left room successfully",
+  };
+};
