@@ -28,7 +28,7 @@ export const updateProfile = async (
       _id: { $ne: userId },
     });
     if (existingUser) {
-      throw new AppError("Username already in use", 400);
+      throw new AppError("Email already in use", 400);
     }
 
     //update user
@@ -55,70 +55,55 @@ export const updateProfile = async (
 // update status
 
 export const updateStatus = async (userId: string, status: string) => {
-  
-    const validStatuses = ["online", "offline", "away"];
+  const validStatuses = ["online", "offline", "away"];
 
-    if (!validStatuses.includes(status)) {
-      throw new AppError(
-        `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
-        400,
-      );
-    }
-
-    const user = await User.findByIdAndUpdate(
-      userId,
-      {
-        status,
-        lastSeen: new Date(),
-      },
-      { new: true, runValidators: true },
+  if (!validStatuses.includes(status)) {
+    throw new AppError(
+      `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
+      400,
     );
+  }
 
-    if (!user) {
-      throw new AppError("User not found", 404);
-    }
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      status,
+      lastSeen: new Date(),
+    },
+    { new: true, runValidators: true },
+  );
 
-    console.log(`✅ Status updated for user: ${userId} to ${status}`);
-    return user;
- 
-    
-  
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  console.log(`✅ Status updated for user: ${userId} to ${status}`);
+  return user;
 };
 
 // get public user info
 
 export const getUserPublicInfo = async (userId: string) => {
+  const user = await User.findById(userId).select(
+    "username avatar status lastSeen",
+  );
 
-    const user = await User.findById(userId).select(
-      "username avatar status lastSeen",
-    );
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
 
-    if (!user) {
-      throw new AppError("User not found", 404);
-    }
-
-    console.log(`✅ Public info fetched for user: ${userId}`);
-    return user;
- 
-    
+  console.log(`✅ Public info fetched for user: ${userId}`);
+  return user;
 };
 
 // add updateAvatar later
 
 // get all users
 
-const getAllUsers = async ()=> {
+export const getAllUsers = async () => {
   const users = User.find();
-  if(!users)
-    throw new AppError("Users not found",400)
+  if (!users) throw new AppError("Users not found", 400);
 
   return users;
-}
-
-export default {
-  getAllUsers,
-  getMe,
-  updateProfile,
-  updateStatus,
-  getUserPublicInfo,
 };
+
