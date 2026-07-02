@@ -196,7 +196,6 @@ export const deleteRoom = async (roomId: string, userId: string) => {
   };
 };
 
-
 // Get room members
 
 export const getRoomMembers = async (roomId: string, page = 1, limit = 50) => {
@@ -226,3 +225,13 @@ export const getRoomMembers = async (roomId: string, page = 1, limit = 50) => {
   };
 };
 
+// verify if the user is room member or not by room id
+
+export const isRoomMember = async (userId: string, roomId: string) => {
+  const membership = await RoomMember.findOne({
+    userId: new Types.ObjectId(userId),
+    roomId: new Types.ObjectId(roomId),
+  });
+
+  return !!membership;
+};
