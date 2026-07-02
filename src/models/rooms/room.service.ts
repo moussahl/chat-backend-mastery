@@ -1,6 +1,7 @@
 import { Room } from "./room.model";
 import { Types } from "mongoose";
 import { RoomMember } from "./roomMember.model";
+import AppError from "../../utils/AppError";
 
 //create room
 export const createRoom = async (
@@ -63,7 +64,6 @@ export const listUserRooms = async (userId: string, page = 1, limit = 20) => {
   });
 
   //count the total
-
   const total = await RoomMember.countDocuments({
     userId: new Types.ObjectId(userId),
   });
@@ -78,6 +78,26 @@ export const listUserRooms = async (userId: string, page = 1, limit = 20) => {
       total,
       pages: Math.ceil(total / limit),
     },
+  };
+};
+
+// get room by ID
+
+export const getRoomById = async (roomId: string) => {
+  const room = await Room.findById(roomId).populate("createdBy", "name").lean();
+
+  if (!room) throw new AppError("Room not found", 404);
+
+  //count members
+  const membersCount = RoomMember.countDocuments({
+    roomId: new Types.ObjectId(roomId),
+  });
+
+  console.log(`✅ Room fetched: ${roomId}`);
+
+  return {
+    ...room,
+    membersCount,
   };
 };
 
