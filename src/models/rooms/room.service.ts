@@ -162,3 +162,38 @@ export const leaveRoom = async (userId: string, roomId: string) => {
     message: "Left room successfully",
   };
 };
+
+// Delete room (only admin)
+
+export const deleteRoom = async (roomId: string, userId: string) => {
+  const membership = await RoomMember.findOne({
+    roomId: new Types.ObjectId(roomId),
+    userId: new Types.ObjectId(userId),
+    role: "admin",
+  });
+
+  if (!membership) {
+    throw new AppError("Only room admin can delete the room", 403);
+  }
+
+  //delete all users
+  await RoomMember.deleteMany({
+    roomId: new Types.ObjectId(roomId),
+  });
+
+  // delete room
+  const deletedRoom = await Room.findByIdAndDelete(roomId);
+
+  if (!deletedRoom) {
+    throw new AppError("Room not found", 404);
+  }
+
+  console.log(`✅ Room deleted: ${roomId} by ${userId}`);
+
+  return {
+    success: true,
+    message: "Room deleted successfully",
+  };
+};
+
+
