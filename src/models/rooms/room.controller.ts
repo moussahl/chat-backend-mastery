@@ -23,7 +23,14 @@ export const creeateRoom = catchAsync(async (req: Request, res: Response) => {
 
 // list all rooms where user is member
 
-export const listUserRooms = catchAsync(async (req: Request, res: Response) => {
+interface ListRoomQuery {
+  page?: string,
+  limit?: string
+}
+
+
+
+export const listUserRooms = catchAsync(async (req: Request<{}, {}, {}, ListRoomQuery>, res: Response) => {
   const userId = req.user?.id;
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 20;
@@ -32,11 +39,11 @@ export const listUserRooms = catchAsync(async (req: Request, res: Response) => {
     throw new AppError("Not authenticated", 401);
   }
 
-  const roomMembership = await userService.listUserRooms(userId, page, limit);
+  const rooms = await userService.listUserRooms(userId, page, limit);
 
   res.status(200).json({
     success: true,
-    roomMembership,
+    data: rooms
   });
 });
 
