@@ -158,3 +158,26 @@ export const getRoomMembers = catchAsync(
     });
   },
 );
+
+
+// Check if authenticated user is a room member
+
+export const isRoomMember = catchAsync(
+  async (req: Request<RoomParams>, res: Response) => {
+    const roomId = req.params.roomId;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new AppError("Not authenticated", 401);
+    }
+
+    const isMember = await roomService.isRoomMember(userId, roomId);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        isMember,
+      },
+    });
+  },
+);
