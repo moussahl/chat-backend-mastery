@@ -77,7 +77,7 @@ export const joinRoom = catchAsync(async (req: Request, res: Response) => {
   const roomId = req.body.roomId;
   const userId = req.body.userId;
 
-   if (!roomId || !userId) {
+  if (!roomId || !userId) {
     throw new AppError("Room ID and user ID are required", 400);
   }
   const roomMember = await roomService.joinRoom(userId, roomId);
@@ -85,25 +85,23 @@ export const joinRoom = catchAsync(async (req: Request, res: Response) => {
     success: true,
     data: roomMember,
   });
-  
 });
 
+// Quit Room
 
-// Quit Room 
-
-export const quitRoom = catchAsync(async(req: Request, res: Response)=>{
-
+export const quitRoom = catchAsync(async (req: Request, res: Response) => {
   const roomId = req.body.roomId;
   const userId = req.body.userId;
 
-   if (!roomId || !userId) {
+  if (!roomId || !userId) {
     throw new AppError("Room ID and user ID are required", 400);
   }
 
-  const membership = await roomService.deleteRoom(roomId, userId);
+  const membership = await roomService.leaveRoom(roomId, userId);
 
-
-
-
-})
-
+  res.status(200).json({
+    success: true,
+    message: `user with ID :${userId} has seccessfully quit from Room with ID ${roomId}`,
+    data: membership,
+  });
+});
