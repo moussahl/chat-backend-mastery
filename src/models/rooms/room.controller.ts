@@ -128,3 +128,33 @@ export const deleteRoom = catchAsync(
     });
   },
 );
+
+
+// Get room members
+
+interface MembersQuery {
+  page?: string;
+  limit?: string;
+}
+
+export const getRoomMembers = catchAsync(
+  async (
+    req: Request<RoomParams, {}, {}, MembersQuery>,
+    res: Response,
+  ) => {
+    const roomId = req.params.roomId;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 50;
+
+    const members = await roomService.getRoomMembers(
+      roomId,
+      page,
+      limit,
+    );
+
+    res.status(200).json({
+      success: true,
+      data: members,
+    });
+  },
+);
