@@ -89,5 +89,21 @@ export const joinRoom = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+// Quit Room 
 
+export const quitRoom = catchAsync(async(req: Request, res: Response)=>{
+
+  const roomId = req.body.roomId;
+  const userId = req.body.userId;
+
+   if (!roomId || !userId) {
+    throw new AppError("Room ID and user ID are required", 400);
+  }
+
+  const membership = await roomService.deleteRoom(roomId, userId);
+
+
+
+
+})
 

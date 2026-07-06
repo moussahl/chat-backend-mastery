@@ -157,10 +157,9 @@ export const leaveRoom = async (userId: string, roomId: string) => {
 
   console.log(`✅ User ${userId} left room ${roomId}`);
 
-  return {
-    success: true,
-    message: "Left room successfully",
-  };
+  return membership
+    
+  
 };
 
 // Delete room (only admin)
