@@ -105,3 +105,26 @@ export const quitRoom = catchAsync(async (req: Request, res: Response) => {
     data: membership,
   });
 });
+
+
+// Delete room
+
+// use RoomParams interface 
+
+export const deleteRoom = catchAsync(
+  async (req: Request<RoomParams>, res: Response) => {
+    const roomId = req.params.roomId;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new AppError("Not authenticated", 401);
+    }
+
+    const result = await roomService.deleteRoom(roomId, userId);
+
+    res.status(200).json({
+      success: true,
+      result,
+    });
+  },
+);
