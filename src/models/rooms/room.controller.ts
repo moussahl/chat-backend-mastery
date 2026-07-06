@@ -77,8 +77,8 @@ export const joinRoom = catchAsync(async (req: Request, res: Response) => {
   const roomId = req.body.roomId;
   const userId = req.body.userId;
 
-  if (!roomId) {
-    throw new AppError("Room ID is required", 400);
+   if (!roomId || !userId) {
+    throw new AppError("Room ID and user ID are required", 400);
   }
   const roomMember = await roomService.joinRoom(userId, roomId);
   res.status(200).json({
@@ -87,5 +87,7 @@ export const joinRoom = catchAsync(async (req: Request, res: Response) => {
   });
   
 });
+
+
 
 
