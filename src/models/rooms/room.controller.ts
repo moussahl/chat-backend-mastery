@@ -71,3 +71,21 @@ export const getRoomById = catchAsync(
   },
 );
 
+// Join room
+
+export const joinRoom = catchAsync(async (req: Request, res: Response) => {
+  const roomId = req.body.roomId;
+  const userId = req.body.userId;
+
+  if (!roomId) {
+    throw new AppError("Room ID is required", 400);
+  }
+  const roomMember = await roomService.joinRoom(userId, roomId);
+  res.status(200).json({
+    success: true,
+    data: roomMember,
+  });
+  
+});
+
+
