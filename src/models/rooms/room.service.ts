@@ -89,7 +89,7 @@ export const getRoomById = async (roomId: string) => {
   if (!room) throw new AppError("Room not found", 404);
 
   //count members
-  const membersCount = RoomMember.countDocuments({
+  const membersCount = await RoomMember.countDocuments({
     roomId: new Types.ObjectId(roomId),
   });
 
