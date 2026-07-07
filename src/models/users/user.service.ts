@@ -70,7 +70,7 @@ export const updateStatus = async (userId: string, status: string) => {
       status,
       lastSeen: new Date(),
     },
-    { new: true, runValidators: true },
+    {  returnDocument: "after", runValidators: true },
   );
 
   if (!user) {
