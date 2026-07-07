@@ -84,14 +84,20 @@ export const listUserRooms = async (userId: string, page = 1, limit = 20) => {
 // Get room by ID
 
 export const getRoomById = async (roomId: string) => {
-  const room = await Room.findById(roomId).populate("createdBy", "name").lean();
+
+const [room, membersCount] = await Promise.all([
+  Room.findById(roomId)
+    .populate("createdBy", "name")
+    .lean(),
+
+  RoomMember.countDocuments({
+    roomId: new Types.ObjectId(roomId),
+  }),
+]);
 
   if (!room) throw new AppError("Room not found", 404);
 
-  //count members
-  const membersCount = await RoomMember.countDocuments({
-    roomId: new Types.ObjectId(roomId),
-  });
+ 
 
   console.log(`✅ Room fetched: ${roomId}`);
 
