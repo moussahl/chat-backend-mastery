@@ -30,7 +30,7 @@ export const updateProfile = async (
     if (existingUser) {
       throw new AppError("Email already in use", 400);
     }
-
+  }
     //update user
 
     const user = await User.findByIdAndUpdate(userId, updateData, {
@@ -45,7 +45,7 @@ export const updateProfile = async (
     console.log(`✅ User profile updated: ${userId}`);
 
     return user;
-  }
+  
 };
 
 // update Avatar
