@@ -1,31 +1,47 @@
 import mongoose from "mongoose";
+import { Types } from "mongoose";
+
+
+
+// mongoose Schema for Messags
 
 const Schema = mongoose.Schema;
 
 const messageSchema = new Schema(
   {
     sender: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: [true, "Sender is required"],
+      index: true,
     },
 
-    roomId: {
-      type: mongoose.Schema.Types.ObjectId,
+    room: {
+      type: Schema.Types.ObjectId,
       ref: "Room",
-      required: true,
+      required: [true, "Room is required"],
+      index: true,
     },
     content: {
       type: String,
-      required: [true, "Content required"],
+      required: [true, "Message content is required"],
       trim: true,
-      maxlength: 2000,
+      minlength: [1, "Message cannot be empty"],
+      maxlength: [5000, "Message cannot exceed 5000 characters"],
     },
 
-    type: { type: String, enum: ["text", "image", "system"], default: "text" },
-    isRead: {
+    type: {
+      type: String,
+      enum: {
+        values: ["text", "image", "file", "system"],
+        message: "Message type must be text, image, file, or system",
+      },
+      default: "text",
+    },
+     isRead: {
       type: Boolean,
       default: false,
+      index: true,
     },
   },
   { timestamps: true },
@@ -33,5 +49,7 @@ const messageSchema = new Schema(
 
 // Index pour récupérer l'historique d'un salon rapidement (pagination)
 messageSchema.index({ room: 1, createdAt: -1 });
+messageSchema.index({ sender: 1, createdAt: -1 });
+messageSchema.index({ room: 1, isRead: 1 });
 
 export default mongoose.model("Message", messageSchema);
