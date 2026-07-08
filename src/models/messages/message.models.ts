@@ -1,6 +1,16 @@
 import mongoose from "mongoose";
 import { Types } from "mongoose";
 
+export interface IMessage extends mongoose.Document {
+  _id: Types.ObjectId;
+  sender: Types.ObjectId;
+  room: Types.ObjectId;
+  content: string;
+  type: "text" | "image" | "file" | "system";
+  isRead: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 
 // mongoose Schema for Messags
