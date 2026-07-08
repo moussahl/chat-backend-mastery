@@ -17,7 +17,7 @@ export interface IMessage extends mongoose.Document {
 
 const Schema = mongoose.Schema;
 
-const messageSchema = new Schema(
+const messageSchema = new Schema<IMessage>(
   {
     sender: {
       type: Schema.Types.ObjectId,
