@@ -94,40 +94,50 @@ export const getHistory = async (
     .limit(limit)
     .lean();
 
+  // Inverse for get in chronological order
+  messages.reverse();
 
+  // Count totla messages number
+  const total = await Message.countDocuments({
+    room: new Types.ObjectId(roomId),
+  });
 
-    
-    // Inverse for get in chronological order
-    messages.reverse();
- 
-    // Count totla messages number
-    const total = await Message.countDocuments({
-      room: new Types.ObjectId(roomId),
-    });
- 
-    console.log(
-      `✅ Messages history fetched for room ${roomId}: ${messages.length} messages`
-    );
- 
-    return {
-      data: messages,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-        hasMore: page < Math.ceil(total / limit),
-      },
-      room: {
-        _id: room._id,
-        name: room.name,
-        type: room.type,
-      },
-    };
+  console.log(
+    `✅ Messages history fetched for room ${roomId}: ${messages.length} messages`,
+  );
+
+  return {
+    data: messages,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+      hasMore: page < Math.ceil(total / limit),
+    },
+    room: {
+      _id: room._id,
+      name: room.name,
+      type: room.type,
+    },
+  };
 };
 // Get message by ID
 
+export const getMessageById = async (messageId: string): Promise<IMessage> => {
+  const message = await Message.findById(messageId).populate(
+    "sender",
+    "username  status",
+  );
 
+  if (!message) {
+    throw new AppError("Message not found", 404);
+  }
+
+  console.log(`✅ Message fetched: ${messageId}`);
+
+  return message;
+};
 
 // Delete message ( only by sender or admin room)
 
