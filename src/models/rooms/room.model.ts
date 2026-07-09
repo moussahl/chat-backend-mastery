@@ -9,6 +9,11 @@ const roomSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+     lastMessage: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+      default: null,
+    },
     lastActivity: { type: Date, default: Date.now },
   },
   { timestamps: true },
