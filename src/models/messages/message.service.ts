@@ -139,7 +139,35 @@ export const getMessageById = async (messageId: string): Promise<IMessage> => {
   return message;
 };
 
-// Delete message ( only by sender or admin room)
+// Delete message (only by sender or admin room)
+export const deleteMessage = async (
+  messageId: string,
+  userId: string,
+): Promise<void> => {
+  // Fetch the message and ensure it exists
+  const message = await Message.findById(messageId);
+
+  if (!message) {
+    throw new AppError("Message not found", 404);
+  }
+
+  // Identify if the current user is the author/sender
+  const isSender = message.sender.toString() === userId;
+
+  const room = await Room.findById(message.room);
+
+  // Identify if the current user is the room creator (admin)
+  const isAdmin = room && room.createdBy.toString() === userId;
+
+  //  Block the request if they are neither
+  if (!isSender && !isAdmin) {
+    throw new AppError("You are not authorized to delete this message", 403);
+  }
+
+  await Message.findByIdAndDelete(messageId);
+
+  console.log(`✅ Message deleted: ${messageId}`);
+};
 
 // Mark messages as read
 
