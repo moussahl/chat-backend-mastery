@@ -62,4 +62,4 @@ messageSchema.index({ room: 1, createdAt: -1 });
 messageSchema.index({ sender: 1, createdAt: -1 });
 messageSchema.index({ room: 1, isRead: 1 });
 
-export default mongoose.model("Message", messageSchema);
+export const Message = mongoose.model("Message", messageSchema);
