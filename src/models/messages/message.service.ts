@@ -171,6 +171,51 @@ export const deleteMessage = async (
 
 // Mark messages as read
 
+export const markMessagesAsRead = async (
+  userId: string,
+  roomId: string
+): Promise<{ modifiedCount: number }> => {
+
+    // Verify membership
+    const isMember = await isRoomMember(userId, roomId)
+    
+ 
+    if (!isMember) {
+      throw new AppError("You are not a member of this room", 403);
+    }
+ 
+    // marked messages as read
+    const result = await Message.updateMany(
+      {
+        room: new Types.ObjectId(roomId),
+        isRead: false,
+      },
+      {
+        isRead: true,
+      }
+    );
+ 
+    // update lastReadAt in RoomMember
+    await RoomMember.findOneAndUpdate(
+      {
+        userId: new Types.ObjectId(userId),
+        roomId: new Types.ObjectId(roomId),
+      },
+      {
+        lastReadAt: new Date(),
+      }
+    );
+ 
+    console.log(
+      `✅ Messages marked as read in room ${roomId}: ${result.modifiedCount} messages`
+    );
+ 
+    return {
+      modifiedCount: result.modifiedCount,
+    };
+ 
+};
+
 // Get unread messages from a room
 
 // Delete all messages from a room (when the room is deleted)
