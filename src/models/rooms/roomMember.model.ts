@@ -19,9 +19,16 @@ const roomMemberSchema = new mongoose.Schema({
   },
 
   joinedAt: {type: Date, default: Date.now},
+  lastReadAt: { 
+    type: Date, 
+    default: Date.now // Default to now so historical messages aren't marked unread
+  },
 });
 
 // Empêche un user de rejoindre la même room deux fois
+
+
+// Compound index for fast queries when checking or updating a member's status
 roomMemberSchema.index({ userId: 1, roomId: 1 }, { unique: true });
 
 
