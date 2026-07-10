@@ -173,51 +173,73 @@ export const deleteMessage = async (
 
 export const markMessagesAsRead = async (
   userId: string,
-  roomId: string
+  roomId: string,
 ): Promise<{ modifiedCount: number }> => {
+  // Verify membership
+  const isMember = await isRoomMember(userId, roomId);
 
-    // Verify membership
-    const isMember = await isRoomMember(userId, roomId)
-    
- 
-    if (!isMember) {
-      throw new AppError("You are not a member of this room", 403);
-    }
- 
-    // marked messages as read
-    const result = await Message.updateMany(
-      {
-        room: new Types.ObjectId(roomId),
-        isRead: false,
-      },
-      {
-        isRead: true,
-      }
-    );
- 
-    // update lastReadAt in RoomMember
-    await RoomMember.findOneAndUpdate(
-      {
-        userId: new Types.ObjectId(userId),
-        roomId: new Types.ObjectId(roomId),
-      },
-      {
-        lastReadAt: new Date(),
-      }
-    );
- 
-    console.log(
-      `✅ Messages marked as read in room ${roomId}: ${result.modifiedCount} messages`
-    );
- 
-    return {
-      modifiedCount: result.modifiedCount,
-    };
- 
+  if (!isMember) {
+    throw new AppError("You are not a member of this room", 403);
+  }
+
+  // marked messages as read
+  const result = await Message.updateMany(
+    {
+      room: new Types.ObjectId(roomId),
+      isRead: false,
+    },
+    {
+      isRead: true,
+    },
+  );
+
+  // update lastReadAt in RoomMember
+  await RoomMember.findOneAndUpdate(
+    {
+      userId: new Types.ObjectId(userId),
+      roomId: new Types.ObjectId(roomId),
+    },
+    {
+      lastReadAt: new Date(),
+    },
+  );
+
+  console.log(
+    `✅ Messages marked as read in room ${roomId}: ${result.modifiedCount} messages`,
+  );
+
+  return {
+    modifiedCount: result.modifiedCount,
+  };
 };
 
 // Get unread messages from a room
+export const getUnreadCount = async (
+  userId: string,
+  roomId: string,
+): Promise<number> => {
+  // Retrieve the last read timestamp for the specified user in the given room
+  const member = await RoomMember.findOne({
+    userId: new Types.ObjectId(userId),
+    roomId: new Types.ObjectId(roomId),
+  });
 
+  if (!member) {
+    throw new AppError("You are not a member of this room", 403);
+  }
+
+  // Fallback to the Unix epoch if no last read timestamp exists
+  const lastReadDate = member.lastReadAt || new Date(0);
+
+  // Count incoming messages created after the last read date, excluding the user's own messages
+  const unreadCount = await Message.countDocuments({
+    room: new Types.ObjectId(roomId),
+    sender: { $ne: new Types.ObjectId(userId) },
+    createdAt: { $gt: lastReadDate }
+  });
+
+  return unreadCount;
+};
 // Delete all messages from a room (when the room is deleted)
 
 // Search for messages in a room.
