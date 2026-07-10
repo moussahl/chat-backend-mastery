@@ -251,5 +251,51 @@ export const deleteRoomMessages = async (roomId: string): Promise<void> => {
 };
 
 // Search for messages in a room.
+export const searchMessages = async (
+  userId: string,
+  roomId: string,
+  query: string,
+  page = 1,
+  limit = 20,
+) => {
+  // Verify membership
+  const isMember = await isRoomMember(userId, roomId);
+
+  if (!isMember) {
+    throw new AppError("You are not a member of this room", 403);
+  }
+
+  const skip = (page - 1) * limit;
+
+  // Search with regex
+  const messages = await Message.find({
+    room: new Types.ObjectId(roomId),
+    $text: { $search: query },
+  })
+    .populate("sender", "username status")
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  const total = await Message.countDocuments({
+    room: new Types.ObjectId(roomId),
+    $text: { $search: query },
+  });
+
+  console.log(
+    `✅ Messages searched in room ${roomId}: found ${messages.length} results`,
+  );
+
+  return {
+    data: messages,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  };
+};
 
 // export all services
+
