@@ -235,12 +235,20 @@ export const getUnreadCount = async (
   const unreadCount = await Message.countDocuments({
     room: new Types.ObjectId(roomId),
     sender: { $ne: new Types.ObjectId(userId) },
-    createdAt: { $gt: lastReadDate }
+    createdAt: { $gt: lastReadDate },
   });
 
   return unreadCount;
 };
 // Delete all messages from a room (when the room is deleted)
+
+export const deleteRoomMessages = async (roomId: string): Promise<void> => {
+  const result = await Message.deleteMany({
+    room: new Types.ObjectId(roomId),
+  });
+
+  console.log(`✅ Deleted ${result.deletedCount} messages from room ${roomId}`);
+};
 
 // Search for messages in a room.
 
