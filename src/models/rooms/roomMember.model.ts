@@ -26,7 +26,7 @@ const roomMemberSchema = new mongoose.Schema({
 });
 
 // Empêche un user de rejoindre la même room deux fois
-
+  /* TODO later  */
 
 // Compound index for fast queries when checking or updating a member's status
 roomMemberSchema.index({ userId: 1, roomId: 1 }, { unique: true });
