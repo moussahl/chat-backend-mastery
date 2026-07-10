@@ -299,3 +299,13 @@ export const searchMessages = async (
 
 // export all services
 
+export default {
+  saveMessage,
+  getHistory,
+  getMessageById,
+  deleteMessage,
+  markMessagesAsRead,
+  getUnreadCount,
+  deleteRoomMessages,
+  searchMessages,
+};
