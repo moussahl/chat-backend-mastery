@@ -1,30 +1,30 @@
 import { Router } from "express";
 import * as roomController from "./room.controller";
+import * as messageController from "../messages/message.controller";
+import { roomMessageRouter } from "../messages/message.routes"; // Import ONLY the nested router
 
 const router = Router();
 
-// Create room
+// ==========================================
+// ROOM CRUD & MEMBERSHIP ROUTES
+// Base: /api/rooms
+// ==========================================
 router.post("/", roomController.creeateRoom);
-
-// List user rooms
 router.get("/", roomController.listUserRooms);
-
-// Get room by id
 router.get("/:roomId", roomController.getRoomById);
-
-// Join room
 router.post("/join", roomController.joinRoom);
-
-// Quit room
 router.post("/quit", roomController.quitRoom);
-
-// Delete room (admin only)
 router.delete("/:roomId", roomController.deleteRoom);
-
-// Get room members
 router.get("/:roomId/members", roomController.getRoomMembers);
-
-// Check membership
 router.get("/:roomId/is-member", roomController.isRoomMember);
+
+// Unread count sits at the room level, 
+router.get("/:roomId/unread-count", messageController.getUnreadCount);
+
+// ==========================================
+// NESTED MESSAGES DELEGATION
+// Forwards /api/rooms/:roomId/messages/* to the roomMessageRouter
+// ==========================================
+router.use("/:roomId/messages", roomMessageRouter);
 
 export default router;
