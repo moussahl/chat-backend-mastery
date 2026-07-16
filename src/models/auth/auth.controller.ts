@@ -2,7 +2,12 @@ import catchAsync from "../../utils/catchAsync";
 import * as authService from "../auth/auth.service";
 import { Request, Response } from "express";
 
-// register
+/**
+ * @desc  Register a user
+ * @route POST /api/auth/register
+ * @access public
+ */
+
 export const register = catchAsync(async (req: Request, res: Response) => {
   const { token, user } = await authService.register(req.body);
   res.status(200).json({
@@ -14,7 +19,12 @@ export const register = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// login
+/**
+ * @desc  login a user (with email and password)
+ * @route POST /api/auth/login
+ * @access public
+ */
+
 export const login = catchAsync(async (req: Request, res: Response) => {
   const { token, user } = await authService.login(req.body);
 
