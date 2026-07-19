@@ -17,7 +17,7 @@ interface SocketResponse {
 }
 
 // In-memory online users tracker.
-// Replace with Redis in production.
+// Replace with Redis in production. ----------------------------------------------------------
 const onlineUsers = new Map<string, OnlineUser>();
 
 /**
