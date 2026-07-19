@@ -1,23 +1,25 @@
-// 1. Environment Configuration (Must be at the very top to load variables early)
+//  Environment Configuration (Must be at the very top to load variables early)
 require("dotenv").config();
 
-// 2. Third-Party / Core Dependencies
+// Third-Party / Core Dependencies
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helemt from "helmet";
 import morgan from "morgan";
 
-// 3. Database & Infrastructure Configuration
-import { connectToDB } from "./config/db.config";
 
-// 4. Custom Application Middlewares
+
+//  Custom Application Middlewares
+import protect from "./middlewares/auth.middleware";
 import errorHandler from "./middlewares/error.middleware";
 
-// 5. Application Routes
+//  Application Routes
 import authRoutes from "./models/auth/auth.routes";
+import userRoutes from "./models/users/user.routes";
+import roomRoutes from "./models/rooms/room.routes";
+import { directMessageRouter } from "./models/messages/message.routes"
 
-// 6. Constants & Configurations
-const PORT = process.env.PORT || 5000;
+
 
 // create Express application
 const app = express();
@@ -75,7 +77,7 @@ app.get("/health", (req: Request, res: Response) => {
   });
 });
 
-app.get("api/v1/health", (req: Request, res: Response) => {
+app.get("/api/v1/health", (req: Request, res: Response) => {
   res.status(200).json({
     status: "OK",
     version: "1.0.0",
@@ -88,8 +90,14 @@ app.get("api/v1/health", (req: Request, res: Response) => {
 // ============================================
 
 //auth route
-app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/auth", authRoutes); //public
 
+// protect everything else under /api/v1
+app.use("/api/v1", protect);
+
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/rooms", roomRoutes);
+app.use("/api/v1/messages", directMessageRouter);
 // ============================================
 //  404 MIDDLEWARE - Not found Routes
 // ============================================
@@ -105,20 +113,6 @@ app.use((req, res) => {
 // Error handler - MUST be last
 app.use(errorHandler);
 
-// start
 
-const startServer = async () => {
-  try {
-    await connectToDB();
-    app.listen(PORT, () => {
-      console.log(`Server has started on ${PORT}`);
-    });
-  } catch (error) {
-    console.error("Failed to start server:", error);
-    process.exit(1);
-  }
-};
-
-startServer();
 
 export default app;
