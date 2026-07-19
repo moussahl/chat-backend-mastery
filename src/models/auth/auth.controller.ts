@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 /**
  * @desc  Register a user
  * @route POST /api/auth/register
- * @access public
+ * @access Public
  */
 
 export const register = catchAsync(async (req: Request, res: Response) => {
@@ -22,7 +22,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
 /**
  * @desc  login a user (with email and password)
  * @route POST /api/auth/login
- * @access public
+ * @access Public
  */
 
 export const login = catchAsync(async (req: Request, res: Response) => {
